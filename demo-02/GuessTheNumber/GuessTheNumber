@@ -1,0 +1,94 @@
+#author: J_S.0
+#code-sculptor: http://www.codeskulptor.org/#user38_SxtT8zHSB7_18.py
+import math
+import random
+import simplegui
+
+# template for "Guess the number" mini-project
+# input will come from buttons and an input field
+# all output for the game will be printed in the console
+
+# globals
+user_guess = 0
+secret_number = 0
+guess_remaining = 0
+maxRange = 100
+
+# helper function to start and restart the game
+def new_game():
+    global user_guess, secret_number, secret_picked, guess_remaining
+    user_guess = 0
+    secret_number = 0
+    secret_picked = False
+    secretValue_onMaxRange(maxRange)
+    inp.set_text("")
+
+# helper function to handle user input
+def guess_handler():
+    correct_answer = False
+    global user_guess, secret_number, guess_remaining
+    if user_guess < secret_number: print "Higher" if guess_remaining else ""
+    elif user_guess > secret_number: print "Lower" if guess_remaining else ""
+    else:
+        print "Correct! You are the Shampion for Guess The Number my friend! *<(:) \n"
+        correct_answer = True
+    if correct_answer: new_game()
+    elif not guess_remaining:
+        print 'Game Over! :_(\nThe correct answer was: ' + str(secret_number) + '\n'
+        new_game()
+    else:
+        guess_remaining -= 1
+        print 'Guess remaining: ' + str(guess_remaining) + '\n'
+
+# helper function to determine count of attempts based on secret number
+def calcGuess_remaining():
+    global secret_number, guess_remaining
+    if not secret_number: return 0
+    BASE = 2 # local const
+    guess_remaining = int(math.ceil(math.log(secret_number + 1)/math.log(BASE)))
+
+# define event handlers for control panel
+def secretValue_onMaxRange(maxRange):
+    global secret_number
+    secret_number = random.randrange(0, maxRange)
+    calcGuess_remaining()
+    print 'a Secrent number between 1 - ' + str(maxRange) + ' has been chosen\nYou have ' + str(guess_remaining) + ' attempts. Please make your guess! :)\n'
+
+def range100():
+    # button that changes the range to [0,100) and starts a new game
+    global maxRange
+    maxRange = 100
+    secretValue_onMaxRange(maxRange)
+
+def range1000():
+    # button that changes the range to [0,1000) and starts a new game
+    global maxRange
+    maxRange = 1000
+    secretValue_onMaxRange(maxRange)
+
+def input_guess(guess):
+    # main game logic goes here
+    global user_guess
+    try:
+        user_guess = int(guess)
+        print 'Guess was ' + guess
+        guess_handler()
+    except ValueError:
+        print 'Ouch! not a valid guess'
+
+
+# create frame
+frame = simplegui.create_frame('Guess The Number', 200, 200);
+
+# register event handlers for control elements and start frame
+inp = frame.add_input('Guess the number', input_guess, 200)
+frame.add_button('0-100', range100, 100)
+frame.add_button('0-1000', range1000, 100)
+frame.start()
+
+# call new_game
+new_game()
+
+# test calls
+
+# always remember to check your completed program against the grading rubric
